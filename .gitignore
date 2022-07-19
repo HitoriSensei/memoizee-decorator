@@ -1,0 +1,7 @@
+*.js
+*.js.map
+*.d.ts
+!@types/*.d.ts
+tsconfig.tsbuildinfo
+node_modules
+.idea
