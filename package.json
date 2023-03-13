@@ -1,6 +1,6 @@
 {
   "name": "@hitorisensei/memoizee-decorator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Memoization decorator backed by memoizee and hash-sum",
   "keywords": [
     "memoizee",
