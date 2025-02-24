@@ -1,5 +1,7 @@
-import memoizee, { Options } from 'memoizee';
+import memoizee, { Memoized, Options } from 'memoizee';
 import hash from 'hash-sum';
+
+type AnyFunction = (...args: any[]) => any;
 
 /**
  * Memoize decorator for functions.
@@ -24,47 +26,29 @@ export const Memoize =
       );
     }
 
-    const memoizedSymbol = getMemoizedSymbol(propertyKey);
+    const wrapper = memoizee(originalMethod, {
+      primitive: true,
+      normalizer: hash,
+      ...options,
+    })
 
-    const wrapper = function (this: any, ...args: any[]) {
-      if (!this.hasOwnProperty(memoizedSymbol)) {
-        Object.defineProperty(this, memoizedSymbol, {
-          enumerable: false,
-          configurable: false,
-          value: memoizee(originalMethod, {
-            primitive: true,
-            normalizer: hash,
-            ...options,
-          }),
-        });
-      }
-      return this[memoizedSymbol](...args);
-    };
-
-    if (isGet) {
-      descriptor.get = wrapper;
-    } else {
+    if (isValue) {
       descriptor.value = wrapper;
+    } else {
+      descriptor.get = wrapper;
     }
 
     return descriptor;
   };
 
-function getMemoizedSymbol(propertyKey: PropertyKey): symbol {
-  return Symbol(String(propertyKey) + '_memoized');
-}
-
 /**
  * Clear the memoized cache for the method.
- * @param target
- * @param propertyKey
+ * @param method
  */
-export const clearMemoization = <T extends Object>(
-  target: T,
-  propertyKey: keyof T,
+export const clearMemoization = <Method extends AnyFunction>(
+  method: Method,
 ) => {
-  const memoizedSymbol = getMemoizedSymbol(propertyKey);
-  if (target.hasOwnProperty(memoizedSymbol)) {
-    (target as any)[memoizedSymbol].clear();
+  if('clear' in method) {
+    (method as unknown as Memoized<Method>).clear();
   }
 };

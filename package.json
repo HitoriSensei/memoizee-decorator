@@ -19,6 +19,7 @@
   "author": "Piotr \"Hitori\" Bosak",
   "main": "memoize.decorator.js",
   "scripts": {
+    "prepublishOnly": "npm run build && npm run test",
     "build": "tsc",
     "test": "jest"
   },
